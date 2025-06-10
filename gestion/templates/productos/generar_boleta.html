@@ -1,0 +1,74 @@
+{% extends "productos/base.html" %}
+{% block title %}Generar Boleta{% endblock %}
+{% block content %}
+
+<h2>Generar Boleta de Venta</h2>
+
+<form method="post" action="{% url 'generar_boleta' %}">
+  {% csrf_token %}
+
+  <!-- Datos del cliente -->
+  <div class="mb-3">
+    <label for="nombre_usuario" class="form-label">Nombre del Cliente</label>
+    <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" minlength="3" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="documento_usuario" class="form-label">Documento del Cliente</label>
+    <input type="text" class="form-control" name="documento_usuario" id="documento_usuario" maxlength="8" pattern="\d{8}" required>
+  </div>
+
+  <!-- Lista dinámica de productos -->
+  <div id="productos-container">
+    <div class="producto mb-3 row align-items-end">
+      <div class="col-md-6">
+        <label class="form-label">Producto</label>
+        <select name="items[0][id]" class="form-select" required>
+          {% for producto in productos %}
+            <option value="{{ producto.id }}">{{ producto.nombre }} - S/. {{ producto.precio }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Cantidad</label>
+        <input type="number" name="items[0][cantidad]" class="form-control" min="1" value="1" required>
+      </div>
+      <div class="col-md-2 d-none">
+        <button type="button" class="btn btn-danger btn-remove">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-secondary mt-3" id="btn-agregar">+ Agregar otro producto</button>
+  <button type="submit" class="btn btn-primary mt-3">Generar Boleta</button>
+</form>
+
+<!-- Script para duplicar y eliminar -->
+<script>
+let index = 1;
+
+document.getElementById('btn-agregar').addEventListener('click', () => {
+  const container = document.getElementById('productos-container');
+  const filaOriginal = container.querySelector('.producto');
+  const nuevaFila = filaOriginal.cloneNode(true);
+
+  nuevaFila.querySelector('select').name = `items[${index}][id]`;
+  nuevaFila.querySelector('input[type="number"]').name = `items[${index}][cantidad]`;
+  nuevaFila.querySelector('input[type="number"]').value = 1;
+
+  nuevaFila.querySelector('.btn-remove').classList.remove('d-none');
+  container.appendChild(nuevaFila);
+  index++;
+});
+
+// Delegación para eliminar
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.classList.contains('btn-remove')) {
+    const fila = e.target.closest('.producto');
+    const filas = document.querySelectorAll('.producto');
+    if (filas.length > 1) fila.remove();
+  }
+});
+</script>
+
+{% endblock %}

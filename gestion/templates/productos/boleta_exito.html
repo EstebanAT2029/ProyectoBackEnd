@@ -1,0 +1,37 @@
+{% extends "productos/base.html" %}
+{% block title %}Boleta Generada{% endblock %}
+
+{% block content %}
+<h2>Boleta generada con éxito</h2>
+
+<p><strong>Serie:</strong> {{ boleta.serie }}</p>
+<p><strong>Número:</strong> {{ boleta.numero }}</p>
+<p><strong>Cliente:</strong> {{ boleta.cliente_denominacion }}</p>
+<p><strong>Documento:</strong> {{ boleta.cliente_numero_de_documento }}</p>
+<p><strong>Fecha de emisión:</strong> {{ boleta.fecha_de_emision }}</p>
+<p><strong>Total:</strong> S/. {{ boleta.total }}</p>
+
+<h4>Productos:</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Descripción</th>
+      <th>Cantidad</th>
+      <th>Precio Unitario</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in boleta.items %}
+    <tr>
+      <td>{{ item.descripcion }}</td>
+      <td>{{ item.cantidad }}</td>
+      <td>S/. {{ item.precio_unitario }}</td>
+      <td>S/. {{ item.total }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{% url 'generar_boleta_formulario' %}" class="btn btn-primary">Generar otra boleta</a>
+{% endblock %}
